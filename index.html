@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fractional Knapsack Problem</title>
+    <style>
+        pre {
+            background-color: black;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            color: green;
+            overflow-x: auto;
+        }
+        code {
+            font-family: Consolas, monospace;
+        }
+
+        .main{
+            padding: 12px;
+            
+        }
+
+    </style>
+</head>
+<body>
+    <div class="main">
+
+    <div class="content">
+        <h1>A(1)Write a program non-recursive and recursive program to calculate Fibonacci
+            numbers and analyze their time and space complexity</h1>
+    
+        <p>Here’s how to write both a non-recursive (iterative) and recursive Java program to calculate Fibonacci numbers, along with an analysis of their time and space complexities.</p>
+    
+        <h2>Non-Recursive (Iterative) Fibonacci Program</h2>
+        <pre><code>
+    public class FibonacciIterative {
+        public static int fibonacci(int n) {
+            if (n <= 1) return n;
+    
+            int prev1 = 0, prev2 = 1;
+            int result = 1;
+    
+            for (int i = 2; i <= n; i++) {
+                result = prev1 + prev2;
+                prev1 = prev2;
+                prev2 = result;
+            }
+            return result;
+        }
+    
+        public static void main(String[] args) {
+            int n = 10; // Example input
+            System.out.println("Fibonacci of " + n + " is: " + fibonacci(n));
+        }
+    }
+        </code></pre>
+    
+        <h3>Time Complexity</h3>
+        <ul>
+            <li><strong>Time Complexity</strong>: \( O(n) \)  
+                - Each loop iteration does a constant amount of work, and the loop runs `n - 1` times.
+            </li>
+            <li><strong>Space Complexity</strong>: \( O(1) \)  
+                - Only a fixed amount of memory is used for variables `prev1`, `prev2`, and `result`, regardless of `n`.
+            </li>
+        </ul>
+    
+        <h2>Recursive Fibonacci Program</h2>
+        <pre><code>
+    public class FibonacciRecursive {
+        public static int fibonacci(int n) {
+            if (n <= 1) return n;
+            return fibonacci(n - 1) + fibonacci(n - 2);
+        }
+    
+        public static void main(String[] args) {
+            int n = 10; // Example input
+            System.out.println("Fibonacci of " + n + " is: " + fibonacci(n));
+        }
+    }
+        </code></pre>
+    
+        <h3>Time Complexity</h3>
+        <ul>
+            <li><strong>Time Complexity</strong>: \( O(2^n) \)  
+                - Each call to `fibonacci(n)` spawns two new calls: `fibonacci(n - 1)` and `fibonacci(n - 2)`. This results in an exponential number of calls, making it inefficient for large `n`.
+            </li>
+            <li><strong>Space Complexity</strong>: \( O(n) \)  
+                - The recursion depth can reach `n` (the stack keeps a call record for each recursive call), so space complexity is linear in terms of the maximum depth of recursion.
+            </li>
+        </ul>
+    
+        <h2>Summary</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Approach</th>
+                    <th>Time Complexity</th>
+                    <th>Space Complexity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Iterative</td>
+                    <td>O(n)</td>
+                    <td>O(1)</td>
+                </tr>
+                <tr>
+                    <td>Recursive</td>
+                    <td>O(2<sup>n</sup>)</td>
+                    <td>O(n)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <section>
+        <h1>A(3) Write a program to solve a fractional Knapsack problem using a greedy method</h1>
+
+        <p>The fractional knapsack problem is solved using a greedy algorithm by sorting items based on their value-to-weight ratio in descending order. The goal is to maximize the total value without exceeding the knapsack's weight capacity.</p>
+        
+        <h2>Java Code Implementation</h2>
+        <pre><code>
+import java.util.Arrays;
+import java.util.Comparator;
+
+class Item {
+    int weight;
+    int value;
+
+    // Constructor
+    public Item(int weight, int value) {
+        this.weight = weight;
+        this.value = value;
+    }
+}
+
+public class FractionalKnapsack {
+
+    // Function to solve the fractional knapsack problem
+    public static double fractionalKnapsack(int capacity, Item[] items) {
+        // Sort items by value-to-weight ratio in descending order
+        Arrays.sort(items, new Comparator<Item>() {
+            @Override
+            public int compare(Item a, Item b) {
+                double r1 = (double) a.value / a.weight;
+                double r2 = (double) b.value / b.weight;
+                return Double.compare(r2, r1); // Sort in descending order
+            }
+        });
+
+        double totalValue = 0.0;
+        
+        for (Item item : items) {
+            if (capacity >= item.weight) {
+                // If the item can be added fully, take it all
+                capacity -= item.weight;
+                totalValue += item.value;
+            } else {
+                // If the item cannot be added fully, take the fraction
+                totalValue += (double) item.value * ((double) capacity / item.weight);
+                break; // Knapsack is full
+            }
+        }
+        return totalValue;
+    }
+
+    public static void main(String[] args) {
+        Item[] items = {
+            new Item(10, 60), // weight = 10, value = 60
+            new Item(20, 100), // weight = 20, value = 100
+            new Item(30, 120) // weight = 30, value = 120
+        };
+        
+        int capacity = 50; // Knapsack capacity
+
+        double maxValue = fractionalKnapsack(capacity, items);
+        System.out.println("Maximum value we can obtain = " + maxValue);
+    }
+}
+        </code></pre>
+
+        <h2>Explanation</h2>
+        <ol>
+            <li><strong>Sort by Value-to-Weight Ratio:</strong> The items are sorted in descending order based on their value-to-weight ratio, which prioritizes items that offer the most value per unit of weight.</li>
+            <li><strong>Greedy Selection:</strong> We loop through the sorted items, adding each item to the knapsack if it fits. If an item doesn’t fully fit, we add only the fraction that fits in the remaining capacity.</li>
+        </ol>
+
+        <h2>Example Output</h2>
+        <p>If the knapsack capacity is <code>50</code>, the output for the above example would be:</p>
+        <pre><code>Maximum value we can obtain = 240.0</code></pre>
+
+        <h2>Complexity Analysis</h2>
+        <ul>
+            <li><strong>Time Complexity:</strong> O(n log n), due to the sorting of items by value-to-weight ratio.</li>
+            <li><strong>Space Complexity:</strong> O(1), as we use a fixed amount of extra space aside from the input array.</li>
+        </ul>
+    </section>
+    <div class="content">
+        <h1>A(4) Write a program to solve a 0-1 Knapsack problem using dynamic programming or
+            branch and bound strategy.</h1>
+    
+        <section>
+            <h2>Dynamic Programming Approach</h2>
+            <p>The 0-1 Knapsack problem is solved using dynamic programming by building up the solution incrementally. This approach stores intermediate results to avoid redundant calculations.</p>
+    
+            <h3>Java Code for Dynamic Programming</h3>
+            <pre><code>
+    public class KnapsackDP {
+    
+        // Function to solve the 0-1 Knapsack problem
+        public static int knapsack(int[] weights, int[] values, int capacity) {
+            int n = values.length;
+            int[][] dp = new int[n + 1][capacity + 1];
+    
+            // Build the dp table in bottom-up manner
+            for (int i = 1; i <= n; i++) {
+                for (int w = 0; w <= capacity; w++) {
+                    if (weights[i - 1] <= w) {
+                        dp[i][w] = Math.max(dp[i - 1][w], dp[i - 1][w - weights[i - 1]] + values[i - 1]);
+                    } else {
+                        dp[i][w] = dp[i - 1][w];
+                    }
+                }
+            }
+            return dp[n][capacity]; // Maximum value achievable with given capacity
+        }
+    
+        public static void main(String[] args) {
+            int[] weights = { 10, 20, 30 }; // weights of items
+            int[] values = { 60, 100, 120 }; // values of items
+            int capacity = 50; // Knapsack capacity
+    
+            int maxValue = knapsack(weights, values, capacity);
+            System.out.println("Maximum value that can be achieved = " + maxValue);
+        }
+    }
+            </code></pre>
+    
+            <h3>Explanation</h3>
+            <ul>
+                <li><strong>Dynamic Programming Table</strong>: A `dp` table is created where `dp[i][w]` represents the maximum value that can be obtained with the first `i` items and a knapsack capacity of `w`.</li>
+                <li><strong>Choice at Each Step</strong>: At each step, the algorithm decides whether to include the current item or not based on its weight and value.</li>
+                <li><strong>Result</strong>: The maximum value achievable with the given capacity is stored in `dp[n][capacity]`.</li>
+            </ul>
+    
+            <h3>Complexity Analysis</h3>
+            <ul>
+                <li><strong>Time Complexity:</strong> \( O(n \times W) \), where `n` is the number of items and `W` is the knapsack capacity.</li>
+                <li><strong>Space Complexity:</strong> \( O(n \times W) \), as we use a 2D array of size `n * W` to store intermediate results.</li>
+            </ul>
+    
+            <h3>Example Output</h3>
+            <div class="example-output">
+                <pre><code>Maximum value that can be achieved = 220</code></pre>
+            </div>
+        </section>
+    
+        <section>
+            <h2>Branch-and-Bound Approach</h2>
+            <p>The branch-and-bound approach solves the 0-1 Knapsack problem by creating a search tree, where each node represents a decision to include or exclude an item. The algorithm explores promising branches while pruning those that can't improve the current best solution.</p>
+    
+            <h3>Java Code for Branch-and-Bound</h3>
+            <pre><code>
+    import java.util.PriorityQueue;
+    
+    class KnapsackBranchAndBound {
+        static class Item {
+            int weight;
+            int value;
+    
+            public Item(int weight, int value) {
+                this.weight = weight;
+                this.value = value;
+            }
+        }
+    
+        static class Node {
+            int level, profit, weight;
+            double bound;
+    
+            public Node(int level, int profit, int weight, double bound) {
+                this.level = level;
+                this.profit = profit;
+                this.weight = weight;
+                this.bound = bound;
+            }
+        }
+    
+        static double bound(Node u, int n, int capacity, Item[] items) {
+            if (u.weight >= capacity) return 0;
+    
+            double profitBound = u.profit;
+            int j = u.level + 1;
+            int totalWeight = u.weight;
+    
+            while (j < n && totalWeight + items[j].weight <= capacity) {
+                totalWeight += items[j].weight;
+                profitBound += items[j].value;
+                j++;
+            }
+    
+            if (j < n) profitBound += (capacity - totalWeight) * ((double) items[j].value / items[j].weight);
+            return profitBound;
+        }
+    
+        public static int knapsack(int capacity, Item[] items) {
+            int n = items.length;
+            java.util.Arrays.sort(items, (a, b) -> Double.compare((double) b.value / b.weight, (double) a.value / a.weight));
+    
+            PriorityQueue<Node> pq = new PriorityQueue<>((a, b) -> Double.compare(b.bound, a.bound));
+            Node u = new Node(-1, 0, 0, 0.0);
+            u.bound = bound(u, n, capacity, items);
+            pq.add(u);
+    
+            int maxProfit = 0;
+            while (!pq.isEmpty()) {
+                u = pq.poll();
+    
+                if (u.level == n - 1 || u.bound <= maxProfit) continue;
+    
+                Node v = new Node(u.level + 1, u.profit + items[u.level + 1].value, u.weight + items[u.level + 1].weight, 0.0);
+                if (v.weight <= capacity && v.profit > maxProfit) maxProfit = v.profit;
+                v.bound = bound(v, n, capacity, items);
+                if (v.bound > maxProfit) pq.add(v);
+    
+                v = new Node(u.level + 1, u.profit, u.weight, 0.0);
+                v.bound = bound(v, n, capacity, items);
+                if (v.bound > maxProfit) pq.add(v);
+            }
+            return maxProfit;
+        }
+    
+        public static void main(String[] args) {
+            Item[] items = { new Item(10, 60), new Item(20, 100), new Item(30, 120) };
+            int capacity = 50;
+            System.out.println("Maximum profit is: " + knapsack(capacity, items));
+        }
+    }
+            </code></pre>
+    
+            <h3>Explanation</h3>
+            <ul>
+                <li><strong>Item Sorting:</strong> Items are sorted based on their value-to-weight ratio in descending order to maximize value for each unit of weight.</li>
+                <li><strong>Node Representation:</strong> Each node in the search tree represents a partial solution with fields for level, profit, weight, and bound.</li>
+                <li><strong>Bound Calculation:</strong> The bound function estimates the maximum possible profit from a node, considering possible fractional parts of the next item.</li>
+                <li><strong>Priority Queue:</strong> Nodes are processed in order of their bound values, with the most promising nodes explored first.</li>
+            </ul>
+    
+            <h3>Complexity Analysis</h3>
+            <ul>
+                <li><strong>Time Complexity:</strong> In the worst case, the time complexity is \( O(2^n) \), but pruning typically reduces the number of explored nodes significantly, often performing closer to \( O(n \log n) \).</li>
+                <li><strong>Space Complexity:</strong> \( O(2^n) \) for the priority queue, though pruning reduces space usage significantly in practice.</li>
+            </ul>
+    
+            <h3>Example Output</h3>
+            <div class="example-output">
+                <pre><code>Maximum profit is: 220</code></pre>
+            </div>
+        </section>
+    
+    </div>
+
+    
+    <div>
+
+    <h1>A(5) Design n-Queens matrix having first Queen placed. Use backtracking to place
+    remaining Queens to generate the final n-queen‘s matrix</h1>
+    <p>The <strong>N-Queen Problem</strong> is a classic puzzle in computer science and AI, where the goal is to place <em>N</em> queens on an <em>N x N</em> chessboard in such a way that no two queens threaten each other. A queen can attack another queen in the same row, column, or diagonal. The problem can be solved efficiently using <strong>backtracking</strong>.</p>
+
+    <h2>Explanation of the Code</h2>
+    <div class="explanation">
+        <p>This Java program uses backtracking to find all possible solutions to the N-Queen problem. Here's a detailed breakdown of the code:</p>
+
+        <pre>
+           <code>
+                import java.util.*;
+                
+                public class J4_Nqueen {
+                    public static boolean issafe(char board[][], int row, int col) {
+                        // Vertical Up
+                        for (int i = row - 1; i >= 0; i--) {
+                            if (board[i][col] == 'Q') {
+                                return false;
+                            }
+                        }
+                
+                        // Diagonal Left
+                        for (int i = row - 1, j = col - 1; i >= 0 && j >= 0; j--, i--) {
+                            if (board[i][j] == 'Q') {
+                                return false;
+                            }
+                        }
+                
+                        // Diagonal Right
+                        for (int i = row - 1, j = col + 1; i >= 0 && j < board.length; i--, j++) {
+                            if (board[i][j] == 'Q') {
+                                return false;
+                            }
+                        }
+                
+                        return true;
+                    }
+                
+                    public static void nQueen(char board[][], int row) {
+                        if (row == board.length) {
+                            print(board);
+                            return;
+                        }
+                
+                        for (int j = 0; j < board.length; j++) {
+                            if (issafe(board, row, j)) {
+                                board[row][j] = 'Q'; 
+                                nQueen(board, row + 1);  // function call
+                                board[row][j] = 'X';  // backtracking step
+                            }
+                        }
+                    }
+                
+                    public static void print(char arr[][]) {
+                        System.out.println("--------------Chess Board--------------");
+                        for (int i = 0; i < arr.length; i++) {
+                            for (int j = 0; j < arr.length; j++) {
+                                System.out.print(arr[i][j] + "  ");
+                            }
+                            System.out.println();
+                        }
+                    }
+                
+                    public static void main(String args[]) {
+                        int n = 4;
+                        char chess[][] = new char[n][n];
+                
+                        for (int i = 0; i < n; i++) {
+                            for (int j = 0; j < n; j++) {
+                                chess[i][j] = 'X';
+                            }
+                        }
+                
+                        nQueen(chess, 0);
+                    }
+                }
+                   
+           </code>
+        
+        </pre>
+
+
+
+        <h3>1. The <code>issafe</code> Method</h3>
+        <p>The <code>issafe</code> method checks if it's safe to place a queen at a given position on the board. It ensures that no other queens threaten the position by checking the same column, left diagonal, and right diagonal.</p>
+
+        <pre><code>public static boolean issafe(char board[][], int row, int col) {
+            // Vertical Up
+            for (int i = row - 1; i >= 0; i--) {
+                if (board[i][col] == 'Q') {
+                    return false;
+                }
+            }
+
+            // Diagonal Left
+            for (int i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
+                if (board[i][j] == 'Q') {
+                    return false;
+                }
+            }
+
+            // Diagonal Right
+            for (int i = row - 1, j = col + 1; i >= 0 && j < board.length; i--, j++) {
+                if (board[i][j] == 'Q') {
+                    return false;
+                }
+            }
+
+            return true;
+        }</code></pre>
+
+        <h3>2. The <code>nQueen</code> Method</h3>
+        <p>The <code>nQueen</code> method attempts to place queens on the board row by row. For each row, it tries placing a queen in every column. If a valid placement is found, it moves to the next row. If all queens are placed successfully, it prints the board. Backtracking is used to try different positions when a solution is not possible.</p>
+
+        <pre><code>public static void nQueen(char board[][], int row) {
+            // Base case: If all queens are placed, print the board.
+            if (row == board.length) {
+                print(board);  // Print the board.
+                return;
+            }
+
+            // Try placing a queen in each column of the current row.
+            for (int j = 0; j < board.length; j++) {
+                if (issafe(board, row, j)) {
+                    board[row][j] = 'Q';  // Place a queen.
+                    nQueen(board, row + 1);  // Recursively place the next queen.
+                    board[row][j] = 'X';  // Backtrack: Remove the queen.
+                }
+            }
+        }</code></pre>
+
+        <h3>3. The <code>print</code> Method</h3>
+        <p>This method prints the current state of the chessboard, showing either a queen ('Q') or an empty space ('X').</p>
+
+        <pre><code>public static void print(char arr[][]) {
+            System.out.println("--------------chess-----------------");
+            for (int i = 0; i < arr.length; i++) {
+                for (int j = 0; j < arr.length; j++) {
+                    System.out.print(arr[i][j] + "  ");
+                }
+                System.out.println();
+            }
+        }</code></pre>
+
+        <h3>4. The <code>main</code> Method</h3>
+        <p>The entry point of the program initializes a 4x4 chessboard with 'X' and then calls the <code>nQueen</code> method to solve the problem for a 4x4 board.</p>
+
+        <pre><code>public static void main(String args[]) {
+            int n = 4;  // The size of the board (4x4)
+            char chess[][] = new char[n][n];
+
+            // Initialize the board with 'X' (representing empty spaces)
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    chess[i][j] = 'X';  // Fill the board with 'X'
+                }
+            }
+
+            // Start the backtracking algorithm with the first row (0th row)
+            nQueen(chess, 0);
+        }</code></pre>
+    </div>
+
+    <h2>Example Output</h2>
+    <div class="example-output">
+        <p>For a 4x4 board, the possible solutions would be:</p>
+        <pre><code>
+--------------chess-----------------
+X  X  Q  X  
+Q  X  X  X  
+X  X  X  Q  
+X  Q  X  X  
+
+--------------chess-----------------
+X  Q  X  X  
+X  X  X  Q  
+Q  X  X  X  
+X  X  Q  X  
+        </code></pre>
+    </div>
+
+    <h2>Time and Space Complexity</h2>
+    <div class="note">
+        <p><strong>Time Complexity:</strong> The time complexity of this solution is O(N!), where N is the number of queens (or the size of the board). In the worst case, we explore every possible arrangement of queens on the board, leading to factorial time complexity.</p>
+        <p><strong>Space Complexity:</strong> The space complexity is O(N^2) because we store the chessboard in a 2D array of size N x N.</p>
+    </div>
+    </div>
+
+
+
+
+</div>
+
+
+
+</body>
+</html>
